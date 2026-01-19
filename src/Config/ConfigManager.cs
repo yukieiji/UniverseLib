@@ -34,6 +34,9 @@ namespace UniverseLib.Config
 
             if (config.Disable_Setup_Force_ReLoad_ManagedAssemblies != null)
                 Disable_Setup_Force_ReLoad_ManagedAssemblies = config.Disable_Setup_Force_ReLoad_ManagedAssemblies.Value;
+
+            if (config.Disable_AssetBundles_LoadFromMemory != null)
+                Disable_AssetBundles_LoadFromMemory = config.Disable_AssetBundles_LoadFromMemory.Value;
         }
 
         /// <summary>If true, disables UniverseLib from overriding the EventSystem from the game when a UniversalUI is in use.</summary>
@@ -54,5 +57,8 @@ namespace UniverseLib.Config
 
         /// <summary>If true, Disable Force ReLoadManagedAssemblies on setup, Currently only Mono is supported</summary>
         public static bool Disable_Setup_Force_ReLoad_ManagedAssemblies { get; set; }
+
+        /// <summary>If true, disables using LoadFromMemory to load asset bundles.</summary>
+        public static bool Disable_AssetBundles_LoadFromMemory { get; set; }
     }
 }
