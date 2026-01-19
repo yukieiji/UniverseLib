@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ using UniverseLib.Input;
 using UniverseLib.UI.Models;
 using UniverseLib.UI.Panels;
 using UniverseLib.Utility;
+using UniverseLib.Config;
 
 namespace UniverseLib.UI;
 
@@ -268,11 +270,11 @@ public static class UniversalUI
         }
     }
 
-    static bool TryLoadBundle(string id)
+    private static bool TryLoadBundleStream(string id)
     {
         try
         {
-            UIBundle = LoadBundle(id);
+            UIBundle = LoadBundleStream(id);
             return UIBundle != null;
         }
         catch
@@ -281,11 +283,55 @@ public static class UniversalUI
         }
     }
 
+    static bool TryLoadBundle(string id)
+    {
+        if (ConfigManager.Disable_AssetBundles_LoadFromMemory)
+            return TryLoadBundleStream(id);
+
+        try
+        {
+            UIBundle = LoadBundle(id);
+            return UIBundle != null;
+        }
+        catch
+        {
+            return TryLoadBundleStream(id);
+        }
+    }
+
+    static Il2CppSystem.IO.Stream ConvertToIl2CppStream(Stream stream)
+    {
+        Il2CppSystem.IO.MemoryStream il2CppStream = new();
+
+        byte[] managedBuffer = new byte[81920];
+        Il2CppStructArray<byte> il2CppBuffer = new(managedBuffer);
+
+        int bytesRead;
+        while ((bytesRead = stream.Read(managedBuffer, 0, managedBuffer.Length)) > 0)
+        {
+            il2CppBuffer = managedBuffer;
+            il2CppStream.Write(il2CppBuffer, 0, bytesRead);
+        }
+        il2CppStream.Flush();
+        return il2CppStream;
+    }
+
+    private static Stream GetManifestResourceStream(string id) => typeof(Universe).Assembly.GetManifestResourceStream($"UniverseLib.Resources.{id}.bundle");
+
+    static AssetBundle LoadBundleStream(string id)
+    {
+        using Stream bundleStream = GetManifestResourceStream(id);
+        Il2CppSystem.IO.Stream il2CppStream = ConvertToIl2CppStream(bundleStream);
+        AssetBundle bundle = AssetBundle.LoadFromStream(il2CppStream);
+        if (bundle)
+            Universe.Log($"Loaded {id} bundle for Unity {Application.unityVersion}");
+        il2CppStream.Close();
+        return bundle;
+    }
+
     static AssetBundle LoadBundle(string id)
     {
-        AssetBundle bundle = AssetBundle.LoadFromMemory(ReadFully(typeof(Universe)
-                .Assembly
-                .GetManifestResourceStream($"UniverseLib.Resources.{id}.bundle")));
+        AssetBundle bundle = AssetBundle.LoadFromMemory(ReadFully(GetManifestResourceStream(id)));
         if (bundle)
             Universe.Log($"Loaded {id} bundle for Unity {Application.unityVersion}");
         return bundle;

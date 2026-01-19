@@ -21,5 +21,8 @@ namespace UniverseLib.Config
 
         /// <summary>If true, Disable Force ReLoadManagedAssemblies on setup, Currently only Mono is supported</summary>
         public bool? Disable_Setup_Force_ReLoad_ManagedAssemblies;
+
+        /// <summary>If true, disables using LoadFromMemory to load asset bundles.</summary>
+        public bool? Disable_AssetBundles_LoadFromMemory;
     }
 }

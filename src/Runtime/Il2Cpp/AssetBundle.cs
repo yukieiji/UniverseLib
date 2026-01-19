@@ -40,7 +40,7 @@ namespace UniverseLib
         public static AssetBundle LoadFromFile(string path)
         {
             IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromFile>(
-                    "UnityEngine.AssetBundle::LoadFromFile_Internal", 
+                    "UnityEngine.AssetBundle::LoadFromFile_Internal",
                     "UnityEngine.AssetBundle::LoadFromFile")
                 .Invoke(IL2CPP.ManagedStringToIl2Cpp(path), 0u, 0UL);
 
@@ -58,6 +58,26 @@ namespace UniverseLib
                     "UnityEngine.AssetBundle::LoadFromMemory_Internal",
                     "UnityEngine.AssetBundle::LoadFromMemory")
                 .Invoke(((Il2CppStructArray<byte>)binary).Pointer, crc);
+
+            return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
+        }
+
+        // AssetBundle.LoadFromStream(Stream stream)
+
+        private delegate void d_ValidateLoadFromStream(IntPtr stream);
+        private delegate IntPtr d_LoadFromStream(IntPtr stream, uint crc, uint managedReadBufferSize);
+
+        [HideFromIl2Cpp]
+        public static AssetBundle LoadFromStream(Il2CppSystem.IO.Stream stream, uint crc = 0U, uint managedReadBufferSize = 0U)
+        {
+            ICallManager.GetICallUnreliable<d_ValidateLoadFromStream>(
+                "UnityEngine.AssetBundle::ValidateLoadFromStream"
+                ).Invoke(stream.Pointer);
+
+            IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromStream>(
+                    "UnityEngine.AssetBundle::LoadFromStreamInternal",
+                    "UnityEngine.AssetBundle::LoadFromStream")
+                .Invoke(stream.Pointer, crc, managedReadBufferSize);
 
             return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
         }
