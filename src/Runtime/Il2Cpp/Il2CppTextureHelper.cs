@@ -20,7 +20,7 @@ namespace UniverseLib.Runtime.Il2Cpp
         internal delegate void d_Blit2(IntPtr source, IntPtr dest);
 
         internal delegate IntPtr d_CreateSprite(IntPtr texture, ref Rect rect, ref Vector2 pivot, float pixelsPerUnit,
-            uint extrude, int meshType, ref Vector4 border, bool generateFallbackPhysicsShape);
+            uint extrude, int meshType, ref Vector4 border, bool generateFallbackPhysicsShape, object[] secondaryTexture);
 
         internal delegate void d_CopyTexture_Region(IntPtr src, int srcElement, int srcMip, int srcX, int srcY, 
             int srcWidth, int srcHeight, IntPtr dst, int dstElement, int dstMip, int dstX, int dstY);
@@ -58,9 +58,19 @@ namespace UniverseLib.Runtime.Il2Cpp
         internal static Sprite CreateSpriteImpl(Texture texture, Rect rect, Vector2 pivot, float pixelsPerUnit, uint extrude, Vector4 border)
         {
             IntPtr spritePtr = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected")
-                .Invoke(texture.Pointer, ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
+                .Invoke(texture.GetCachedPtr(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false, null);
 
-            return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
+            try
+            {
+                return (Sprite)Type
+                    .GetType("UnityEngine.Bindings.Unmarshal, UnityEngine.CoreModule")
+                    .GetMethod("UnmarshalUnityObject")
+                    .MakeGenericMethod(typeof(Sprite))
+                    .Invoke(null, new object[] { spritePtr });
+            } catch
+            {
+                return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
+            }
         }
 
         internal override bool Internal_CanForceReadCubemaps => true;
