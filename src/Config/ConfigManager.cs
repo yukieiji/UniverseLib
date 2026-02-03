@@ -17,23 +17,39 @@ namespace UniverseLib.Config
         /// </summary>
         public static void LoadConfig(UniverseLibConfig config)
         {
-            if (config.Disable_EventSystem_Override != null)
+            if (config.Disable_EventSystem_Override.HasValue)
+            {
                 Disable_EventSystem_Override = config.Disable_EventSystem_Override.Value;
+            }
 
-            if (config.Force_Unlock_Mouse != null)
+            if (config.Force_Unlock_Mouse.HasValue)
+            {
                 Force_Unlock_Mouse = config.Force_Unlock_Mouse.Value;
+            }
 
             if (!string.IsNullOrEmpty(config.Unhollowed_Modules_Folder))
+            {
                 Unhollowed_Modules_Folder = config.Unhollowed_Modules_Folder;
+            }
 
-            if (config.Disable_Fallback_EventSystem_Search != null)
+            if (config.Disable_Fallback_EventSystem_Search.HasValue)
+            {
                 Disable_Fallback_EventSystem_Search = config.Disable_Fallback_EventSystem_Search.Value;
+            }
 
-            if (config.Allow_UI_Selection_Outside_UIBase != null)
+            if (config.Allow_UI_Selection_Outside_UIBase.HasValue)
+            {
                 Allow_UI_Selection_Outside_UIBase = config.Allow_UI_Selection_Outside_UIBase.Value;
+            }
 
-            if (config.Disable_Setup_Force_ReLoad_ManagedAssemblies != null)
+            if (config.Disable_Setup_Force_ReLoad_ManagedAssemblies.HasValue)
+            {
                 Disable_Setup_Force_ReLoad_ManagedAssemblies = config.Disable_Setup_Force_ReLoad_ManagedAssemblies.Value;
+            }
+            if (config.Bypass_UniverseLib_ICall.HasValue)
+            {
+                Bypass_UniverseLib_ICall = config.Bypass_UniverseLib_ICall.Value;
+            }
         }
 
         /// <summary>If true, disables UniverseLib from overriding the EventSystem from the game when a UniversalUI is in use.</summary>
@@ -54,5 +70,10 @@ namespace UniverseLib.Config
 
         /// <summary>If true, Disable Force ReLoadManagedAssemblies on setup, Currently only Mono is supported</summary>
         public static bool Disable_Setup_Force_ReLoad_ManagedAssemblies { get; set; }
+
+        /// <summary>
+        /// If true, UniverseLib will bypass its own ICall implementations and use the game's original ICalls instead.
+        /// </summary>
+        public static bool Bypass_UniverseLib_ICall { get; set; }
     }
 }

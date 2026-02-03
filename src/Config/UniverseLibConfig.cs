@@ -21,5 +21,10 @@ namespace UniverseLib.Config
 
         /// <summary>If true, Disable Force ReLoadManagedAssemblies on setup, Currently only Mono is supported</summary>
         public bool? Disable_Setup_Force_ReLoad_ManagedAssemblies;
+
+        /// <summary>
+        /// If true, UniverseLib will bypass its own ICall implementations and use the game's original ICalls instead.
+        /// </summary>
+        public bool? Bypass_UniverseLib_ICall;
     }
 }
