@@ -32,7 +32,7 @@ namespace UniverseLib
         }
 
         public const string NAME = "UniverseLib";
-        public const string VERSION = "1.5.11";
+        public const string VERSION = "1.6.0";
         public const string AUTHOR = "Sinai, yukieiji";
         public const string GUID = "com.sinai.universelib";
 
