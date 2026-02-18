@@ -35,11 +35,12 @@ namespace UniverseLib.Runtime.Il2Cpp
                 return (T)iCallCache[signature];
 
             IntPtr ptr = IL2CPP.il2cpp_resolve_icall(signature);
+            IntPtr ptr_Injected = IL2CPP.il2cpp_resolve_icall(signature + "_Injected");
 
-            if (ptr == IntPtr.Zero)
+            if (ptr == IntPtr.Zero && ptr_Injected == IntPtr.Zero)
                 throw new MissingMethodException($"Could not find any iCall with the signature '{signature}'!");
 
-            Delegate iCall = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
+            Delegate iCall = Marshal.GetDelegateForFunctionPointer(ptr == IntPtr.Zero ? ptr_Injected : ptr, typeof(T));
             iCallCache.Add(signature, iCall);
 
             return (T)iCall;
@@ -59,7 +60,7 @@ namespace UniverseLib.Runtime.Il2Cpp
 
             T iCall;
             IntPtr ptr;
-            foreach (string sig in possibleSignatures)
+            foreach (string sig in possibleSignatures.Prepend(key + "_Injected"))
             {
                 ptr = IL2CPP.il2cpp_resolve_icall(sig);
                 if (ptr != IntPtr.Zero)
