@@ -111,6 +111,8 @@ public static class UniversalUI
         PoolHolder.transform.parent = CanvasRoot.transform;
         PoolHolder.SetActive(false);
 
+        SetupDropdownBlockerPatch();
+
         Initializing = false;
     }
 
@@ -334,5 +336,45 @@ public static class UniversalUI
         }
 
         return false;
+    }
+
+    // Dropdown blocker patch
+    //
+    // Unity's Dropdown.CreateBlocker() creates a full-screen transparent overlay to catch
+    // outside clicks. It sets the blocker's Canvas.sortingOrder to parentCanvas.sortingOrder - 1.
+    // Since UniverseLib's UIBase Canvas uses overrideSorting with a high sortingOrder (30000),
+    // the blocker ends up BELOW the panel content and never receives click events.
+    // Fix: bump the blocker's sortingOrder so it sits at the same level as the parent canvas,
+    // above panel content but below the dropdown list.
+
+    static void SetupDropdownBlockerPatch()
+    {
+        Universe.Patch(
+            typeof(Dropdown),
+            "CreateBlocker",
+            MethodType.Normal,
+            postfix: AccessTools.Method(typeof(UniversalUI), nameof(Postfix_CreateBlocker)));
+    }
+
+    static void Postfix_CreateBlocker(GameObject __result)
+    {
+        try
+        {
+            if (!__result)
+                return;
+
+            Canvas blockerCanvas = __result.GetComponent<Canvas>();
+            if (blockerCanvas != null)
+            {
+                // Undo the -1 offset applied by Unity's default CreateBlocker.
+                // This places the blocker at the same sortingOrder as the parent canvas,
+                // ensuring it renders above panel content and can receive clicks to close the dropdown.
+                blockerCanvas.sortingOrder += 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            Universe.LogWarning($"Exception in Dropdown blocker patch: {ex}");
+        }
     }
 }
