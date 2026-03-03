@@ -103,6 +103,7 @@ public static class UniversalUI
     internal static void Init()
     {
         LoadBundle();
+        SetupDropdownBlockerPatch();
 
         CreateRootCanvas();
 
@@ -110,8 +111,6 @@ public static class UniversalUI
         PoolHolder = new GameObject("PoolHolder");
         PoolHolder.transform.parent = CanvasRoot.transform;
         PoolHolder.SetActive(false);
-
-        SetupDropdownBlockerPatch();
 
         Initializing = false;
     }
