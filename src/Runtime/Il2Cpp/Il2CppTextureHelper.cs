@@ -8,6 +8,8 @@ using UnityEngine;
 using UniverseLib.Config;
 #if INTEROP
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityEngine.Experimental.Rendering;
+
 #else
 using UnhollowerBaseLib;
 #endif
@@ -25,7 +27,7 @@ namespace UniverseLib.Runtime.Il2Cpp
 
         internal delegate void d_CopyTexture_Region(IntPtr src, int srcElement, int srcMip, int srcX, int srcY,
             int srcWidth, int srcHeight, IntPtr dst, int dstElement, int dstMip, int dstX, int dstY);
-
+        
         protected internal override Texture2D Internal_NewTexture2D(int width, int height)
         {
             return new(width, height, TextureFormat.RGBA32, 1, false, IntPtr.Zero);
@@ -45,14 +47,14 @@ namespace UniverseLib.Runtime.Il2Cpp
             else
             {
                 ICallManager.GetICall<d_Blit2>("UnityEngine.Graphics::Blit2")
-                    .Invoke(tex.Pointer, rt.Pointer);
+                    .Invoke(Il2CppProvider.ObjectBaseToPtr(tex), Il2CppProvider.ObjectBaseToPtr(rt));
             }
         }
 
         protected internal override byte[] Internal_EncodeToPNG(Texture2D tex)
         {
             IntPtr arrayPtr = ICallManager.GetICall<d_EncodeToPNG>("UnityEngine.ImageConversion::EncodeToPNG")
-                .Invoke(tex.Pointer);
+                .Invoke(Il2CppProvider.ObjectBaseToPtr(tex));
 
             return arrayPtr == IntPtr.Zero ? null : new Il2CppStructArray<byte>(arrayPtr);
         }
@@ -60,25 +62,42 @@ namespace UniverseLib.Runtime.Il2Cpp
         protected internal override Sprite Internal_CreateSprite(Texture2D texture)
         {
             var rect = new Rect(0, 0, texture.width, texture.height);
-            return
-                ConfigManager.Bypass_UniverseLib_ICall ?
-                Sprite.Create(texture, rect, Vector2.zero, 100f, 0u, SpriteMeshType.Tight, Vector4.zero) :
-                CreateSpriteImpl(texture, rect, Vector2.zero, 100f, 0u, Vector4.zero);
+            return CreateSpriteImpl(texture, rect, Vector2.zero, 100f, 0u, SpriteMeshType.Tight, Vector4.zero, false);
         }
 
         protected internal override Sprite Internal_CreateSprite(Texture2D texture, Rect rect, Vector2 pivot, float pixelsPerUnit, uint extrude, Vector4 border)
         {
-            return
-                ConfigManager.Bypass_UniverseLib_ICall ?
-                Sprite.Create(texture, rect, pivot, pixelsPerUnit, extrude, SpriteMeshType.Tight, border) :
-                CreateSpriteImpl(texture, rect, pivot, pixelsPerUnit, extrude, border);
+            return CreateSpriteImpl(texture, rect, pivot, pixelsPerUnit, extrude, SpriteMeshType.Tight, border, false);
         }
 
-        internal static Sprite CreateSpriteImpl(Texture texture, Rect rect, Vector2 pivot, float pixelsPerUnit, uint extrude, Vector4 border)
+        internal static Sprite CreateSpriteImpl(Texture2D texture, 
+            Rect rect, 
+            Vector2 pivot, 
+            float pixelsPerUnit,
+            uint extrude, 
+            SpriteMeshType meshtype,
+            Vector4 border,
+            bool generateFallbackPhysicsShape)
         {
-            IntPtr spritePtr = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected")
-                .Invoke(texture.Pointer, ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
-
+            try
+            {
+                Sprite sprite = Sprite.CreateSprite(texture, rect, pivot, pixelsPerUnit, extrude,
+                    meshtype, border, generateFallbackPhysicsShape);
+                if (sprite != null)
+                    return sprite;
+            }
+            catch { }
+            
+            if (ConfigManager.Bypass_UniverseLib_ICall)
+                return null;
+            
+            d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite");
+            if (icall == null)
+                icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected");
+            if (icall == null)
+                return null;
+            
+            IntPtr spritePtr = icall.Invoke(Il2CppProvider.ObjectBaseToPtr(texture), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
             return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
         }
 
@@ -97,7 +116,7 @@ namespace UniverseLib.Runtime.Il2Cpp
             else
             {
                 ICallManager.GetICall<d_CopyTexture_Region>("UnityEngine.Graphics::CopyTexture_Region")
-                    .Invoke(src.Pointer, srcElement, srcMip, srcX, srcY, srcWidth, srcHeight, dst.Pointer, dstElement, dstMip, dstX, dstY);
+                    .Invoke(Il2CppProvider.ObjectBaseToPtr(src), srcElement, srcMip, srcX, srcY, srcWidth, srcHeight, Il2CppProvider.ObjectBaseToPtr(dst), dstElement, dstMip, dstX, dstY);
             }
             return dst;
         }
