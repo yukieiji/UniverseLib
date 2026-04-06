@@ -14,7 +14,10 @@ using HarmonyLib;
 using UniverseLib.Utility;
 #if INTEROP
 using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.InteropTypes;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Il2CppInterop.Runtime.Runtime;
+
 #else
 using UnhollowerRuntimeLib;
 using UnhollowerBaseLib;
@@ -40,6 +43,12 @@ namespace UniverseLib.Runtime.Il2Cpp
         protected internal override void OnInitialize()
         {
             new Il2CppTextureHelper();
+        }
+        
+        internal static IntPtr ObjectBaseToPtr<T>(T obj) 
+            where T : Il2CppObjectBase
+        {
+            return IL2CPP.Il2CppObjectBaseToPtr(obj);
         }
 
         /// <inheritdoc/>
@@ -108,7 +117,7 @@ namespace UniverseLib.Runtime.Il2Cpp
 
             Il2CppSystem.Collections.Generic.List<GameObject> list = new(count);
             ICallManager.GetICall<d_GetRootGameObjects>("UnityEngine.SceneManagement.Scene::GetRootGameObjectsInternal")
-                .Invoke(scene.handle, list.Pointer);
+                .Invoke(scene.handle, ObjectBaseToPtr(list));
             return list.ToArray();
         }
 

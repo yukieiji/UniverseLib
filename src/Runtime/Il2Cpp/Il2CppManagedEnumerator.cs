@@ -25,7 +25,7 @@ namespace UniverseLib.Runtime.Il2Cpp
     public static class CollectionExtensions
     {
         public static Il2CppIEnumerator WrapToIl2Cpp(this IEnumerator self)
-            => new(new Il2CppManagedEnumerator(self).Pointer);
+            => new(Il2CppProvider.ObjectBaseToPtr(new Il2CppManagedEnumerator(self)));
     }
 
     public class Il2CppManagedEnumerator : Object

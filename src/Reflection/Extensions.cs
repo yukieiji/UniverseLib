@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using UniverseLib.Runtime.Il2Cpp;
 using UniverseLib.Utility;
 
 namespace UniverseLib;
@@ -87,7 +88,7 @@ public static class ReflectionExtensions
 
 #if CPP
         if (objA is Il2CppSystem.Object cppA && objB is Il2CppSystem.Object cppB
-            && cppA.Pointer == cppB.Pointer)
+            && Il2CppProvider.ObjectBaseToPtr(cppA) == Il2CppProvider.ObjectBaseToPtr(cppB))
             return true;
 #endif
 

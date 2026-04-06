@@ -87,7 +87,7 @@ namespace UniverseLib
             if (icall6 != null)
                 unsafe
                 {
-                    var arrayPtr = IL2CPP.Il2CppObjectBaseToPtr(binary);
+                    var arrayPtr = Il2CppProvider.ObjectBaseToPtr(binary);
                     var span = new ManagedSpanWrapper
                     {
                         begin = (void*)(arrayPtr + 0x20), // Skip the IL2CPP object header.
@@ -100,7 +100,7 @@ namespace UniverseLib
                 ptr = ICallManager.GetICallUnreliable<d_LoadFromMemory>(
                         "UnityEngine.AssetBundle::LoadFromMemory_Internal",
                         "UnityEngine.AssetBundle::LoadFromMemory")
-                    .Invoke(binary.Pointer, crc);
+                    .Invoke(Il2CppProvider.ObjectBaseToPtr(binary), crc);
             if (ptr != IntPtr.Zero)
                 return new AssetBundle(ptr);
 
@@ -122,13 +122,13 @@ namespace UniverseLib
         {
             ICallManager.GetICallUnreliable<d_ValidateLoadFromStream>(
                 "UnityEngine.AssetBundle::ValidateLoadFromStream"
-            )?.Invoke(stream.Pointer);
+            )?.Invoke(Il2CppProvider.ObjectBaseToPtr(stream));
 
             IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromStream>(
                     "UnityEngine.AssetBundle::LoadFromStreamInternal_Injected",
                     "UnityEngine.AssetBundle::LoadFromStreamInternal",
                     "UnityEngine.AssetBundle::LoadFromStream")
-                .Invoke(stream.Pointer, crc, 0);
+                .Invoke(Il2CppProvider.ObjectBaseToPtr(stream), crc, 0);
 
             return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
         }
@@ -178,7 +178,7 @@ namespace UniverseLib
                             begin = charPtr,
                             length = name.Length
                         };
-                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, Il2CppType.Of<UnityEngine.Object>().Pointer);
+                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, IL2CPPType.Of<UnityEngine.Object>().Pointer);
                         ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
                     }
                 }
@@ -209,7 +209,7 @@ namespace UniverseLib
                             begin = charPtr,
                             length = name.Length
                         };
-                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, Il2CppType.Of<T>().Pointer);
+                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, IL2CPPType.Of<T>().Pointer);
                         ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
                     }
                 }

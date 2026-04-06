@@ -101,7 +101,7 @@ namespace UniverseLib
                         && type.BaseType.GetGenericTypeDefinition() == typeof(Il2CppArrayBase<>))
                         return type;
 
-                    IntPtr classPtr = IL2CPP.il2cpp_object_get_class(cppBase.Pointer);
+                    IntPtr classPtr = IL2CPP.il2cpp_object_get_class(Il2CppProvider.ObjectBaseToPtr(cppBase));
 
                     Il2CppSystem.Type cppType;
                     if (obj is Il2CppSystem.Object cppObject)
@@ -269,18 +269,19 @@ namespace UniverseLib
 
                 // Casting from il2cpp object to il2cpp object...
 
-                IntPtr castFromPtr = IL2CPP.il2cpp_object_get_class(cppObj.Pointer);
+                IntPtr objPtr = Il2CppProvider.ObjectBaseToPtr(cppObj);
+                IntPtr castFromPtr = IL2CPP.il2cpp_object_get_class(objPtr);
 
                 if (!IL2CPP.il2cpp_class_is_assignable_from(castToPtr, castFromPtr))
                     return obj;
 
                 if (RuntimeSpecificsStore.IsInjected(castToPtr)
-                    && ClassInjectorBase.GetMonoObjectFromIl2CppPointer(cppObj.Pointer) is object monoObject)
+                    && ClassInjectorBase.GetMonoObjectFromIl2CppPointer(objPtr) is object monoObject)
                     return monoObject;
 
                 try
                 {
-                    return Activator.CreateInstance(toType, cppObj.Pointer);
+                    return Activator.CreateInstance(toType, objPtr);
                 }
                 catch
                 {
