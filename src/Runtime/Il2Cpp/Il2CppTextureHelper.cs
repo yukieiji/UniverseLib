@@ -84,12 +84,15 @@ namespace UniverseLib.Runtime.Il2Cpp
             try
             {
                 Sprite sprite = Sprite.Create(
-                    texture, rect, pivot, pixelsPerUnit, extrude, 
+                    texture, rect, pivot, pixelsPerUnit, extrude,
                     meshtype, border, generateFallbackPhysicsShape);
                 if (sprite != null)
                     return sprite;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Universe.LogWarning(ex);
+            }
             
             if (ConfigManager.Bypass_UniverseLib_ICall)
                 return null;
