@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -30,12 +31,12 @@ namespace UniverseLib.Runtime.Il2Cpp
         
         protected internal override Texture2D Internal_NewTexture2D(int width, int height)
         {
-            return new(width, height, TextureFormat.RGBA32, 1, false, IntPtr.Zero);
+            return new(width, height, TextureFormat.RGBA32, false);
         }
 
         protected internal override Texture2D Internal_NewTexture2D(int width, int height, TextureFormat textureFormat, bool mipChain)
         {
-            return new(width, height, textureFormat, mipChain ? -1 : 1, false, IntPtr.Zero);
+            return new(width, height, textureFormat, mipChain);
         }
 
         protected internal override void Internal_Blit(Texture tex, RenderTexture rt)
@@ -70,6 +71,9 @@ namespace UniverseLib.Runtime.Il2Cpp
             return CreateSpriteImpl(texture, rect, pivot, pixelsPerUnit, extrude, SpriteMeshType.Tight, border, false);
         }
 
+        private static MethodInfo _spriteCreateSpriteMethod = typeof(Sprite)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .LastOrDefault(x => x.Name == "CreateSprite");
         internal static Sprite CreateSpriteImpl(Texture2D texture, 
             Rect rect, 
             Vector2 pivot, 
@@ -81,7 +85,8 @@ namespace UniverseLib.Runtime.Il2Cpp
         {
             try
             {
-                Sprite sprite = Sprite.CreateSprite(texture, rect, pivot, pixelsPerUnit, extrude,
+                Sprite sprite = Sprite.Create(
+                    texture, rect, pivot, pixelsPerUnit, extrude, 
                     meshtype, border, generateFallbackPhysicsShape);
                 if (sprite != null)
                     return sprite;
@@ -91,9 +96,7 @@ namespace UniverseLib.Runtime.Il2Cpp
             if (ConfigManager.Bypass_UniverseLib_ICall)
                 return null;
             
-            d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite");
-            if (icall == null)
-                icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected");
+            d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected");
             if (icall == null)
                 return null;
             
