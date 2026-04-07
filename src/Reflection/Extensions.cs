@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using UniverseLib.Runtime.Il2Cpp;
 using UniverseLib.Utility;
+
+#if CPP
+using UniverseLib.Runtime.Il2Cpp;
+#endif
 
 namespace UniverseLib;
 
