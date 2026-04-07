@@ -71,9 +71,6 @@ namespace UniverseLib.Runtime.Il2Cpp
             return CreateSpriteImpl(texture, rect, pivot, pixelsPerUnit, extrude, SpriteMeshType.Tight, border, false);
         }
 
-        private static MethodInfo _spriteCreateSpriteMethod = typeof(Sprite)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .LastOrDefault(x => x.Name == "CreateSprite");
         internal static Sprite CreateSpriteImpl(Texture2D texture, 
             Rect rect, 
             Vector2 pivot, 
