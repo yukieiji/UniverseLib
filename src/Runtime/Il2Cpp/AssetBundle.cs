@@ -43,27 +43,21 @@ namespace UniverseLib
         public static AssetBundle LoadFromFile(string path, uint crc, ulong offset)
         {
             IntPtr ptr = IntPtr.Zero;
-            d_LoadFromFile_Injected icall6 = ICallManager.GetICall<d_LoadFromFile_Injected>(
+            d_LoadFromFile_Injected icall_Injected = ICallManager.GetICall<d_LoadFromFile_Injected>(
                 "UnityEngine.AssetBundle::LoadFromFile_Internal_Injected", false);
-            if (icall6 != null)
-                unsafe
-                {
-                    fixed (char* charPtr = path)
-                    {
-                        var span = new ManagedSpanWrapper
-                        {
-                            begin = charPtr,
-                            length = path.Length
-                        };
-                        var gcHandle = icall6(ref span, crc, offset);
-                        ptr = ((gcHandle != IntPtr.Zero) ? IL2CPP.il2cpp_gchandle_get_target((uint)gcHandle) : IntPtr.Zero);
-                    }
-                }
+            if (icall_Injected != null)
+            {
+                IntPtr gcHandle = IntPtr.Zero;
+                ManagedSpanWrapper.Pin(path, span => gcHandle = icall_Injected(ref span, crc, offset));
+                ptr = ((gcHandle != IntPtr.Zero) ? IL2CPP.il2cpp_gchandle_get_target((uint)gcHandle) : IntPtr.Zero);
+            }
             else
+            {
                 ptr = ICallManager.GetICallUnreliable<d_LoadFromFile>(false,
-                        "UnityEngine.AssetBundle::LoadFromFile_Internal", 
+                        "UnityEngine.AssetBundle::LoadFromFile_Internal",
                         "UnityEngine.AssetBundle::LoadFromFile")
                     ?.Invoke(IL2CPP.ManagedStringToIl2Cpp(path), crc, offset) ?? IntPtr.Zero;
+            }
 
             return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
         }
@@ -117,43 +111,39 @@ namespace UniverseLib
         // ~~~~~~~~~~~~ Instance ~~~~~~~~~~~~
 
         public readonly IntPtr m_bundlePtr = IntPtr.Zero;
-        public readonly IntPtr m_bundlePtr_Unity6 = IntPtr.Zero;
+        public readonly IntPtr m_bundlePtr_Injected = IntPtr.Zero;
 
         public AssetBundle(IntPtr ptr) : base(ptr)
         {
             m_bundlePtr = ptr;
-            m_bundlePtr_Unity6 = Marshal.ReadIntPtr(m_bundlePtr + 0x10);
+            m_bundlePtr_Injected = Marshal.ReadIntPtr(m_bundlePtr + 0x10); // Skip the Il2CppObject header + read the REAL object ptr from there.
         }
 
         // LoadAllAssets()
 
         private delegate IntPtr d_LoadAssetWithSubAssets_Internal(IntPtr _this, IntPtr name, IntPtr type);
-        private delegate IntPtr d_LoadAssetWithSubAssets_Internal_Unity6(IntPtr _this, ref ManagedSpanWrapper name, IntPtr type);
+        private delegate IntPtr d_LoadAssetWithSubAssets_Internal_Injected(IntPtr _this, ref ManagedSpanWrapper name, IntPtr type);
 
         [HideFromIl2Cpp]
         public UnityEngine.Object[] LoadAllAssets()
         {
             IntPtr ptr = IntPtr.Zero;
-            d_LoadAssetWithSubAssets_Internal_Unity6 icall6 = ICallManager.GetICall<d_LoadAssetWithSubAssets_Internal_Unity6>(
+            d_LoadAssetWithSubAssets_Internal_Injected icall_Injected = ICallManager.GetICall<d_LoadAssetWithSubAssets_Internal_Injected>(
                 "UnityEngine.AssetBundle::LoadAssetWithSubAssets_Internal_Injected", false);
-            if (icall6 != null)
-                unsafe
-                {
-                    string name = "";
-                    fixed (char* charPtr = name)
-                    {
-                        var span = new ManagedSpanWrapper
-                        {
-                            begin = charPtr,
-                            length = name.Length
-                        };
-                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, IL2CPPType.Of<UnityEngine.Object>().Pointer);
-                        ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
-                    }
-                }
+            if (icall_Injected != null)
+            {
+                IntPtr gcHandle = IntPtr.Zero;
+                ManagedSpanWrapper.Pin("", span => gcHandle = icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<UnityEngine.Object>().Pointer));
+                ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
+            }
             else
-                ptr = ICallManager.GetICall<d_LoadAssetWithSubAssets_Internal>("UnityEngine.AssetBundle::LoadAssetWithSubAssets_Internal", false)
-                    ?.Invoke(m_bundlePtr, IL2CPP.ManagedStringToIl2Cpp(""), IL2CPPType.Of<UnityEngine.Object>().Pointer) ?? IntPtr.Zero;
+            {
+                ptr = ICallManager
+                    .GetICall<d_LoadAssetWithSubAssets_Internal>(
+                        "UnityEngine.AssetBundle::LoadAssetWithSubAssets_Internal", false)
+                    ?.Invoke(m_bundlePtr, IL2CPP.ManagedStringToIl2Cpp(""),
+                        IL2CPPType.Of<UnityEngine.Object>().Pointer) ?? IntPtr.Zero;
+            }
 
             return ptr != IntPtr.Zero ? (UnityEngine.Object[])new Il2CppReferenceArray<UnityEngine.Object>(ptr) : new UnityEngine.Object[0];
         }
@@ -161,30 +151,25 @@ namespace UniverseLib
         // LoadAsset<T>(string name, Type type)
 
         private delegate IntPtr d_LoadAsset_Internal(IntPtr _this, IntPtr name, IntPtr type);
-        private delegate IntPtr d_LoadAsset_Internal_Unity6(IntPtr _this, ref ManagedSpanWrapper name, IntPtr type);
+        private delegate IntPtr d_LoadAsset_Internal_Injected(IntPtr _this, ref ManagedSpanWrapper name, IntPtr type);
 
         [HideFromIl2Cpp]
         public T LoadAsset<T>(string name) where T : UnityEngine.Object
         {
             IntPtr ptr = IntPtr.Zero;
-            d_LoadAsset_Internal_Unity6 icall6 = ICallManager.GetICall<d_LoadAsset_Internal_Unity6>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
-            if (icall6 != null)
-                unsafe
-                {
-                    fixed (char* charPtr = name)
-                    {
-                        var span = new ManagedSpanWrapper
-                        {
-                            begin = charPtr,
-                            length = name.Length
-                        };
-                        var gcHandle = icall6(m_bundlePtr_Unity6, ref span, IL2CPPType.Of<T>().Pointer);
-                        ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
-                    }
-                }
+            d_LoadAsset_Internal_Injected icall_Injected = ICallManager.GetICall<d_LoadAsset_Internal_Injected>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
+            if (icall_Injected != null)
+            {
+                IntPtr gcHandle = IntPtr.Zero;
+                ManagedSpanWrapper.Pin("", span => gcHandle = icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<T>().Pointer));
+                ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
+            }
             else
+            {
                 ptr = ICallManager.GetICall<d_LoadAsset_Internal>("UnityEngine.AssetBundle::LoadAsset_Internal", false)
-                    ?.Invoke(m_bundlePtr, IL2CPP.ManagedStringToIl2Cpp(name), IL2CPPType.Of<T>().Pointer) ?? IntPtr.Zero;
+                          ?.Invoke(m_bundlePtr, IL2CPP.ManagedStringToIl2Cpp(name), IL2CPPType.Of<T>().Pointer) ??
+                      IntPtr.Zero;
+            }
 
             return ptr != IntPtr.Zero ? new UnityEngine.Object(ptr).TryCast<T>() : null;
         }
@@ -196,8 +181,8 @@ namespace UniverseLib
         [HideFromIl2Cpp]
         public void Unload(bool unloadAllLoadedObjects)
         {
-            d_LoadAsset_Internal_Unity6 icall6 = ICallManager.GetICall<d_LoadAsset_Internal_Unity6>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
-            IntPtr bundlePtr = (icall6 != null) ? m_bundlePtr_Unity6 : m_bundlePtr;
+            d_LoadAsset_Internal_Injected icall_Injected = ICallManager.GetICall<d_LoadAsset_Internal_Injected>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
+            IntPtr bundlePtr = (icall_Injected != null) ? m_bundlePtr_Injected : m_bundlePtr;
             ICallManager.GetICall<d_Unload>("UnityEngine.AssetBundle::Unload")
                 .Invoke(bundlePtr, unloadAllLoadedObjects);
         }

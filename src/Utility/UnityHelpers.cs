@@ -150,6 +150,8 @@ namespace UniverseLib.Utility
         internal static IntPtr ToIl2CppPointer<T>(this T obj) 
             where T : Il2CppObjectBase
         {
+            // Get Pointer from Unhollower/Il2CppInterop instead of .Pointer
+            // This ensures greater compatibility with any variation in behavior
             return IL2CPP.Il2CppObjectBaseToPtr(obj);
         }
 #endif
