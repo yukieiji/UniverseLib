@@ -30,7 +30,7 @@ namespace UniverseLib.Runtime.Il2Cpp
         /// <param name="signature">The signature of the iCall you want to get.</param>
         /// <returns>The <typeparamref name="T"/> delegate if successful.</returns>
         /// <exception cref="MissingMethodException" />
-        public static T GetICall<T>(string signature) where T : Delegate
+        public static T GetICall<T>(string signature, bool throwException = true) where T : Delegate
         {
             if (iCallCache.TryGetValue(signature, out var sig))
             {
@@ -42,7 +42,10 @@ namespace UniverseLib.Runtime.Il2Cpp
                     TryResolveICall($"{signature}_Injected", out ptr)
                 ))
             {
-                throw new MissingMethodException($"Could not find any iCall with the signature '{signature}'!");
+                if (throwException)
+                    throw new MissingMethodException($"Could not find any iCall with the signature '{signature}'!");
+                else
+                    return null;
             }
 
             Delegate iCall = Marshal.GetDelegateForFunctionPointer(ptr, typeof(T));
@@ -57,6 +60,9 @@ namespace UniverseLib.Runtime.Il2Cpp
         /// Fixed the issue where the iCall signature parsing failed for U6000.
         /// </summary>
         public static T GetICallUnreliable<T>(params string[] possibleSignatures) where T : Delegate
+            => GetICallUnreliable<T>(true, possibleSignatures);
+        public static T GetICallUnreliable<T>(bool throwException, params string[] possibleSignatures) 
+            where T : Delegate
         {
             // use the first possible signature as the 'key'.
             string key = possibleSignatures.First();
@@ -80,8 +86,11 @@ namespace UniverseLib.Runtime.Il2Cpp
                 }
             }
 
-            throw new MissingMethodException($"Could not find any iCall from list of provided signatures starting with '{key}'!");
+            if (throwException)
+                throw new MissingMethodException($"Could not find any iCall from list of provided signatures starting with '{key}'!");
+            return null;
         }
+        
         /// <summary>
         /// Use out parameter modifier, redundant value retrieval can be avoided.
         /// </summary>
