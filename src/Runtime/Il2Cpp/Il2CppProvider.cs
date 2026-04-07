@@ -44,12 +44,6 @@ namespace UniverseLib.Runtime.Il2Cpp
         {
             new Il2CppTextureHelper();
         }
-        
-        internal static IntPtr ObjectBaseToPtr<T>(T obj) 
-            where T : Il2CppObjectBase
-        {
-            return IL2CPP.Il2CppObjectBaseToPtr(obj);
-        }
 
         /// <inheritdoc/>
         protected internal override Coroutine Internal_StartCoroutine(IEnumerator routine)
@@ -117,7 +111,7 @@ namespace UniverseLib.Runtime.Il2Cpp
 
             Il2CppSystem.Collections.Generic.List<GameObject> list = new(count);
             ICallManager.GetICall<d_GetRootGameObjects>("UnityEngine.SceneManagement.Scene::GetRootGameObjectsInternal")
-                .Invoke(scene.handle, ObjectBaseToPtr(list));
+                .Invoke(scene.handle, list.ToIl2CppPointer());
             return list.ToArray();
         }
 

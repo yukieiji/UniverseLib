@@ -88,7 +88,7 @@ public static class ReflectionExtensions
 
 #if CPP
         if (objA is Il2CppSystem.Object cppA && objB is Il2CppSystem.Object cppB
-            && Il2CppProvider.ObjectBaseToPtr(cppA) == Il2CppProvider.ObjectBaseToPtr(cppB))
+            && cppA.ToIl2CppPointer() == cppB.ToIl2CppPointer())
             return true;
 #endif
 

@@ -10,6 +10,15 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
+#if CPP
+#if INTEROP
+using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.InteropTypes;
+#else
+using UnhollowerBaseLib;
+#endif
+#endif
+
 namespace UniverseLib.Utility
 {
     public static class UnityHelpers
@@ -133,5 +142,16 @@ namespace UniverseLib.Utility
 
             return onEndEdit.GetValue(_this, null).TryCast<UnityEvent<string>>();
         }
+        
+#if CPP
+        /// <summary>
+        /// Returns the Pointer to any given Il2Cpp Object.
+        /// </summary>
+        internal static IntPtr ToIl2CppPointer<T>(this T obj) 
+            where T : Il2CppObjectBase
+        {
+            return IL2CPP.Il2CppObjectBaseToPtr(obj);
+        }
+#endif
     }
 }

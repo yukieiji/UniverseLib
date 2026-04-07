@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UniverseLib.Config;
+using UniverseLib.Utility;
 #if INTEROP
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine.Experimental.Rendering;
@@ -48,14 +49,14 @@ namespace UniverseLib.Runtime.Il2Cpp
             else
             {
                 ICallManager.GetICall<d_Blit2>("UnityEngine.Graphics::Blit2")
-                    .Invoke(Il2CppProvider.ObjectBaseToPtr(tex), Il2CppProvider.ObjectBaseToPtr(rt));
+                    .Invoke(tex.ToIl2CppPointer(), rt.ToIl2CppPointer());
             }
         }
 
         protected internal override byte[] Internal_EncodeToPNG(Texture2D tex)
         {
             IntPtr arrayPtr = ICallManager.GetICall<d_EncodeToPNG>("UnityEngine.ImageConversion::EncodeToPNG")
-                .Invoke(Il2CppProvider.ObjectBaseToPtr(tex));
+                .Invoke(tex.ToIl2CppPointer());
 
             return arrayPtr == IntPtr.Zero ? null : new Il2CppStructArray<byte>(arrayPtr);
         }
@@ -97,7 +98,7 @@ namespace UniverseLib.Runtime.Il2Cpp
             if (icall == null)
                 return null;
             
-            IntPtr spritePtr = icall.Invoke(Il2CppProvider.ObjectBaseToPtr(texture), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
+            IntPtr spritePtr = icall.Invoke(texture.ToIl2CppPointer(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
             return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
         }
 
@@ -116,7 +117,7 @@ namespace UniverseLib.Runtime.Il2Cpp
             else
             {
                 ICallManager.GetICall<d_CopyTexture_Region>("UnityEngine.Graphics::CopyTexture_Region")
-                    .Invoke(Il2CppProvider.ObjectBaseToPtr(src), srcElement, srcMip, srcX, srcY, srcWidth, srcHeight, Il2CppProvider.ObjectBaseToPtr(dst), dstElement, dstMip, dstX, dstY);
+                    .Invoke(src.ToIl2CppPointer(), srcElement, srcMip, srcX, srcY, srcWidth, srcHeight, dst.ToIl2CppPointer(), dstElement, dstMip, dstX, dstY);
             }
             return dst;
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 using Il2CppSystem;
+using UniverseLib.Utility;
 using IntPtr = System.IntPtr;
 using Type = System.Type;
 using ArgumentNullException = System.ArgumentNullException;
@@ -25,7 +26,7 @@ namespace UniverseLib.Runtime.Il2Cpp
     public static class CollectionExtensions
     {
         public static Il2CppIEnumerator WrapToIl2Cpp(this IEnumerator self)
-            => new(Il2CppProvider.ObjectBaseToPtr(new Il2CppManagedEnumerator(self)));
+            => new(new Il2CppManagedEnumerator(self).ToIl2CppPointer());
     }
 
     public class Il2CppManagedEnumerator : Object

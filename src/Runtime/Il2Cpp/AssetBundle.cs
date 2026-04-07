@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 using UniverseLib.Runtime.Il2Cpp;
+using UniverseLib.Utility;
 #if INTEROP
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Attributes;
@@ -90,12 +91,12 @@ namespace UniverseLib
         {
             ICallManager.GetICallUnreliable<d_ValidateLoadFromStream>(false,
                 "UnityEngine.AssetBundle::ValidateLoadFromStream"
-            )?.Invoke(Il2CppProvider.ObjectBaseToPtr(stream));
+            )?.Invoke(stream.ToIl2CppPointer());
 
             IntPtr ptr = ICallManager.GetICallUnreliable<d_LoadFromStream>(false,
                     "UnityEngine.AssetBundle::LoadFromStreamInternal",
                     "UnityEngine.AssetBundle::LoadFromStream")
-                ?.Invoke(Il2CppProvider.ObjectBaseToPtr(stream), crc, 0) ?? IntPtr.Zero;
+                ?.Invoke(stream.ToIl2CppPointer(), crc, 0) ?? IntPtr.Zero;
 
             return ptr != IntPtr.Zero ? new AssetBundle(ptr) : null;
         }

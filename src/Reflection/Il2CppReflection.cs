@@ -101,7 +101,7 @@ namespace UniverseLib
                         && type.BaseType.GetGenericTypeDefinition() == typeof(Il2CppArrayBase<>))
                         return type;
 
-                    IntPtr classPtr = IL2CPP.il2cpp_object_get_class(Il2CppProvider.ObjectBaseToPtr(cppBase));
+                    IntPtr classPtr = IL2CPP.il2cpp_object_get_class(cppBase.ToIl2CppPointer());
 
                     Il2CppSystem.Type cppType;
                     if (obj is Il2CppSystem.Object cppObject)
@@ -269,7 +269,7 @@ namespace UniverseLib
 
                 // Casting from il2cpp object to il2cpp object...
 
-                IntPtr objPtr = Il2CppProvider.ObjectBaseToPtr(cppObj);
+                IntPtr objPtr = cppObj.ToIl2CppPointer();
                 IntPtr castFromPtr = IL2CPP.il2cpp_object_get_class(objPtr);
 
                 if (!IL2CPP.il2cpp_class_is_assignable_from(castToPtr, castFromPtr))
