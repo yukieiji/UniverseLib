@@ -158,7 +158,7 @@ namespace UniverseLib
             d_LoadAsset_Internal_Injected icall_Injected = ICallManager.GetICall<d_LoadAsset_Internal_Injected>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
             if (icall_Injected != null)
             {
-                IntPtr gcHandle = ManagedSpanWrapper.Invoke("", span => icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<T>().Pointer));
+                IntPtr gcHandle = ManagedSpanWrapper.Invoke(name, span => icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<T>().Pointer));
                 ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
             }
             else
