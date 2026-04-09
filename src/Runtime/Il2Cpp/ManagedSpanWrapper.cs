@@ -1,3 +1,4 @@
+#if CPP
 using System;
 using System.Runtime.InteropServices;
 
@@ -13,8 +14,8 @@ namespace UniverseLib
         /// <summary>
         /// Pins a string and creates a ManagedSpanWrapper using the pinned pointer
         /// </summary>
-        internal static unsafe void Pin(string str, 
-            Action<ManagedSpanWrapper> act)
+        internal static unsafe IntPtr Invoke(string str, 
+            Func<ManagedSpanWrapper, IntPtr> act)
         {
             fixed (char* charPtr = str) // Pins the string to char*
             {
@@ -25,9 +26,10 @@ namespace UniverseLib
                     length = str.Length
                 };
                 
-                // Run Action while string is still pinned
-                act(span);
+                // Invoke Func while string is still pinned
+                return act.Invoke(span);
             }
         }
     }
 }
+#endif

@@ -47,8 +47,7 @@ namespace UniverseLib
                 "UnityEngine.AssetBundle::LoadFromFile_Internal_Injected", false);
             if (icall_Injected != null)
             {
-                IntPtr gcHandle = IntPtr.Zero;
-                ManagedSpanWrapper.Pin(path, span => gcHandle = icall_Injected(ref span, crc, offset));
+                IntPtr gcHandle = ManagedSpanWrapper.Invoke(path, span => icall_Injected(ref span, crc, offset));
                 ptr = ((gcHandle != IntPtr.Zero) ? IL2CPP.il2cpp_gchandle_get_target((uint)gcHandle) : IntPtr.Zero);
             }
             else
@@ -132,8 +131,7 @@ namespace UniverseLib
                 "UnityEngine.AssetBundle::LoadAssetWithSubAssets_Internal_Injected", false);
             if (icall_Injected != null)
             {
-                IntPtr gcHandle = IntPtr.Zero;
-                ManagedSpanWrapper.Pin("", span => gcHandle = icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<UnityEngine.Object>().Pointer));
+                IntPtr gcHandle = ManagedSpanWrapper.Invoke("", span => icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<UnityEngine.Object>().Pointer));
                 ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
             }
             else
@@ -160,8 +158,7 @@ namespace UniverseLib
             d_LoadAsset_Internal_Injected icall_Injected = ICallManager.GetICall<d_LoadAsset_Internal_Injected>("UnityEngine.AssetBundle::LoadAsset_Internal_Injected", false);
             if (icall_Injected != null)
             {
-                IntPtr gcHandle = IntPtr.Zero;
-                ManagedSpanWrapper.Pin("", span => gcHandle = icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<T>().Pointer));
+                IntPtr gcHandle = ManagedSpanWrapper.Invoke("", span => icall_Injected(m_bundlePtr_Injected, ref span, IL2CPPType.Of<T>().Pointer));
                 ptr = ((gcHandle != IntPtr.Zero) ? Marshal.ReadIntPtr(gcHandle) : IntPtr.Zero);
             }
             else
