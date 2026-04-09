@@ -115,7 +115,6 @@ namespace UniverseLib.Runtime.Il2Cpp
                 Graphics.CopyTexture(
                     src, srcElement, srcMip, srcX, srcY, srcWidth, srcHeight,
                     dst, dstElement, dstMip, dstX, dstY);
-                return dst;
             }
             else
             {
