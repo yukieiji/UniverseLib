@@ -82,7 +82,7 @@ namespace UniverseLib
         [HideFromIl2Cpp]
         public static AssetBundle LoadFromStream(Il2CppSystem.IO.Stream stream, uint crc, uint managedReadBufferSize)
         {
-            ICallManager.GetICallUnreliableInternal<d_ValidateLoadFromStream>(
+            ICallManager.GetICallInternal<d_ValidateLoadFromStream>(
                 "UnityEngine.AssetBundle::ValidateLoadFromStream"
             )?.Invoke(stream.ToIl2CppPointer());
 
