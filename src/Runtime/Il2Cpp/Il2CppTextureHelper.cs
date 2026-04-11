@@ -24,9 +24,6 @@ namespace UniverseLib.Runtime.Il2Cpp
 
         internal delegate void d_Blit2(IntPtr source, IntPtr dest);
 
-        internal delegate IntPtr d_CreateSprite(IntPtr texture, ref Rect rect, ref Vector2 pivot, float pixelsPerUnit,
-            uint extrude, int meshType, ref Vector4 border, bool generateFallbackPhysicsShape);
-
         internal delegate void d_CopyTexture_Region(IntPtr src, int srcElement, int srcMip, int srcX, int srcY,
             int srcWidth, int srcHeight, IntPtr dst, int dstElement, int dstMip, int dstX, int dstY);
         
@@ -72,6 +69,18 @@ namespace UniverseLib.Runtime.Il2Cpp
             return CreateSpriteImpl(texture, rect, pivot, pixelsPerUnit, extrude, SpriteMeshType.Tight, border, false);
         }
 
+        private static Type[] _spriteCreateParams = [ 
+            typeof(Texture2D),
+            typeof(Rect),
+            typeof(Vector2),
+            typeof(float),
+            typeof(uint),
+            typeof(SpriteMeshType),
+            typeof(Vector4),
+            typeof(bool)
+        ];
+        private static MethodInfo _spriteCreate = typeof(Sprite).GetMethod("Create", BindingFlags.Static | BindingFlags.Public, _spriteCreateParams);
+        private static MethodInfo _spriteCreateSprite = typeof(Sprite).GetMethod("CreateSprite", BindingFlags.Static | BindingFlags.Public, _spriteCreateParams);
         internal static Sprite CreateSpriteImpl(Texture2D texture, 
             Rect rect, 
             Vector2 pivot, 
@@ -83,26 +92,27 @@ namespace UniverseLib.Runtime.Il2Cpp
         {
             try
             {
-                Sprite sprite = Sprite.Create(
+                return (Sprite)_spriteCreate.Invoke(null, [
                     texture, rect, pivot, pixelsPerUnit, extrude,
-                    meshtype, border, generateFallbackPhysicsShape);
-                if (sprite != null)
-                    return sprite;
+                    meshtype, border, generateFallbackPhysicsShape]);
             }
             catch (Exception ex)
             {
                 Universe.LogWarning(ex);
             }
             
-            if (ConfigManager.Bypass_UniverseLib_ICall)
-                return null;
-            
-            d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected");
-            if (icall == null)
-                return null;
-            
-            IntPtr spritePtr = icall.Invoke(texture.ToIl2CppPointer(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border, false);
-            return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
+            try
+            {
+                return (Sprite)_spriteCreateSprite.Invoke(null, [
+                    texture, rect, pivot, pixelsPerUnit, extrude,
+                    meshtype, border, generateFallbackPhysicsShape]);
+            }
+            catch (Exception ex)
+            {
+                Universe.LogWarning(ex);
+            }
+
+            return null;
         }
 
         internal override bool Internal_CanForceReadCubemaps => true;
