@@ -79,8 +79,8 @@ namespace UniverseLib.Runtime.Il2Cpp
             typeof(Vector4),
             typeof(bool)
         ];
-        private static MethodInfo _spriteCreate = typeof(Sprite).GetMethod("Create", BindingFlags.Static | BindingFlags.Public, _spriteCreateParams);
-        private static MethodInfo _spriteCreateSprite = typeof(Sprite).GetMethod("CreateSprite", BindingFlags.Static | BindingFlags.Public, _spriteCreateParams);
+        private static MethodInfo _spriteCreate = typeof(Sprite).GetMethod("Create", _spriteCreateParams);
+        private static MethodInfo _spriteCreateSprite = typeof(Sprite).GetMethod("CreateSprite", _spriteCreateParams);
         internal static Sprite CreateSpriteImpl(Texture2D texture, 
             Rect rect, 
             Vector2 pivot, 
