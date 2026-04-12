@@ -128,23 +128,21 @@ namespace UniverseLib.Runtime.Il2Cpp
                 {
                     // Unity now calls the ICall with the pointer returned from GetCachedPtr
                     IntPtr spritePtr = icall_secondary
-                        .Invoke(texture.GetCachedPtr(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border,
-                        false, null);
+                        .Invoke(texture.GetCachedPtr(), ref rect, ref pivot, pixelsPerUnit, extrude, (int)meshtype, ref border, generateFallbackPhysicsShape, null);
                     
                     // Unity now calls Unmarshal.UnmarshalUnityObject with the Sprite pointer returned from the ICall
                     return (Sprite)Type
                         .GetType("UnityEngine.Bindings.Unmarshal, UnityEngine.CoreModule")
                         .GetMethod("UnmarshalUnityObject")
                         .MakeGenericMethod(typeof(Sprite))
-                        .Invoke(null, new object[] { spritePtr });
+                        .Invoke(null, [ spritePtr ]);
                 }
                 
                 d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected(System.IntPtr,UnityEngine.Rect&,UnityEngine.Vector2&,System.Single,System.UInt32,System.Int32,UnityEngine.Vector4&,System.Boolean)");
                 if (icall != null)
                 {
                     IntPtr spritePtr = icall
-                        .Invoke(texture.ToIl2CppPointer(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border,
-                            false);
+                        .Invoke(texture.ToIl2CppPointer(), ref rect, ref pivot, pixelsPerUnit, extrude, (int)meshtype, ref border, generateFallbackPhysicsShape);
                     return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
                 }
             }
