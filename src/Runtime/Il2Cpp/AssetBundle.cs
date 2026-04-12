@@ -48,7 +48,7 @@ namespace UniverseLib
             if (icall_Injected != null)
             {
                 IntPtr gcHandle = ManagedSpanWrapper.Invoke(path, span => icall_Injected(ref span, crc, offset));
-                ptr = ((gcHandle != IntPtr.Zero) ? IL2CPP.il2cpp_gchandle_get_target((uint)gcHandle) : IntPtr.Zero);
+                ptr = ((gcHandle != IntPtr.Zero) ? Il2CppProvider.GCHandleGetTarget(gcHandle) : IntPtr.Zero);
             }
             else
             {

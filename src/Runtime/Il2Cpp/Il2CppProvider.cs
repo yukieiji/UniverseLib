@@ -166,6 +166,12 @@ namespace UniverseLib.Runtime.Il2Cpp
 
             SetColorBlock(selectable, (ColorBlock)boxedColors);
         }
+        
+        // Il2CppInterop changed parameters from uint to nint
+        // We call IL2CPP.il2cpp_gchandle_get_target using Reflection to automatically handle value conversion
+        private static MethodInfo _gcHandleGetTarget = typeof(IL2CPP).GetMethod("il2cpp_gchandle_get_target", BindingFlags.Public | BindingFlags.Static);
+        protected internal static IntPtr GCHandleGetTarget(IntPtr gcHandle)
+            => (IntPtr)_gcHandleGetTarget.Invoke(null, [gcHandle]);
     }
 }
 
