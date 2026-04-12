@@ -24,6 +24,11 @@ namespace UniverseLib.Runtime.Il2Cpp
 
         internal delegate void d_Blit2(IntPtr source, IntPtr dest);
 
+        internal delegate IntPtr d_CreateSprite(IntPtr texture, ref Rect rect, ref Vector2 pivot, float pixelsPerUnit,
+            uint extrude, int meshType, ref Vector4 border, bool generateFallbackPhysicsShape);
+        internal delegate IntPtr d_CreateSprite_Secondary(IntPtr texture, ref Rect rect, ref Vector2 pivot, float pixelsPerUnit,
+            uint extrude, int meshType, ref Vector4 border, bool generateFallbackPhysicsShape, object[] secondaryTexture);
+        
         internal delegate void d_CopyTexture_Region(IntPtr src, int srcElement, int srcMip, int srcX, int srcY,
             int srcWidth, int srcHeight, IntPtr dst, int dstElement, int dstMip, int dstX, int dstY);
         
@@ -90,26 +95,56 @@ namespace UniverseLib.Runtime.Il2Cpp
             Vector4 border,
             bool generateFallbackPhysicsShape)
         {
-            try
+            if (ConfigManager.Bypass_UniverseLib_ICall)
             {
-                return (Sprite)_spriteCreate.Invoke(null, [
-                    texture, rect, pivot, pixelsPerUnit, extrude,
-                    meshtype, border, generateFallbackPhysicsShape]);
+                try
+                {
+                    return (Sprite)_spriteCreate.Invoke(null, [
+                        texture, rect, pivot, pixelsPerUnit, extrude,
+                        meshtype, border, generateFallbackPhysicsShape
+                    ]);
+                }
+                catch (Exception ex)
+                {
+                    Universe.LogWarning(ex);
+                }
+
+                try
+                {
+                    return (Sprite)_spriteCreateSprite.Invoke(null, [
+                        texture, rect, pivot, pixelsPerUnit, extrude,
+                        meshtype, border, generateFallbackPhysicsShape
+                    ]);
+                }
+                catch (Exception ex)
+                {
+                    Universe.LogWarning(ex);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Universe.LogWarning(ex);
-            }
-            
-            try
-            {
-                return (Sprite)_spriteCreateSprite.Invoke(null, [
-                    texture, rect, pivot, pixelsPerUnit, extrude,
-                    meshtype, border, generateFallbackPhysicsShape]);
-            }
-            catch (Exception ex)
-            {
-                Universe.LogWarning(ex);
+                d_CreateSprite_Secondary icall_secondary = ICallManager.GetICall<d_CreateSprite_Secondary>("UnityEngine.Sprite::CreateSprite_Injected(System.IntPtr,UnityEngine.Rect&,UnityEngine.Vector2&,System.Single,System.UInt32,System.Int32,UnityEngine.Vector4&,System.Boolean,UnityEngine.SecondarySpriteTexture[])");
+                if (icall_secondary != null)
+                {
+                    IntPtr spritePtr = icall_secondary
+                        .Invoke(texture.GetCachedPtr(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border,
+                        false, null);
+                    
+                    return (Sprite)Type
+                        .GetType("UnityEngine.Bindings.Unmarshal, UnityEngine.CoreModule")
+                        .GetMethod("UnmarshalUnityObject")
+                        .MakeGenericMethod(typeof(Sprite))
+                        .Invoke(null, new object[] { spritePtr });
+                }
+                
+                d_CreateSprite icall = ICallManager.GetICall<d_CreateSprite>("UnityEngine.Sprite::CreateSprite_Injected(System.IntPtr,UnityEngine.Rect&,UnityEngine.Vector2&,System.Single,System.UInt32,System.Int32,UnityEngine.Vector4&,System.Boolean)");
+                if (icall != null)
+                {
+                    IntPtr spritePtr = icall
+                        .Invoke(texture.ToIl2CppPointer(), ref rect, ref pivot, pixelsPerUnit, extrude, 1, ref border,
+                            false);
+                    return spritePtr == IntPtr.Zero ? null : new Sprite(spritePtr);
+                }
             }
 
             return null;
